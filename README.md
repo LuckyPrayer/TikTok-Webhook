@@ -23,3 +23,7 @@ Archive file to store previous feed(s) items. Default is feeds.txt located in th
 
 --force-old
 Send webhook notifications when --archive file is empty.
+
+Example:
+py tiktok_notifier.py --continuous --interval 30m --webhook "https://discord.com/api/webhooks/" --account superearthupdates --token abcd1234tiktokmstoken
+PAUSE
