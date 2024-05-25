@@ -44,13 +44,9 @@ def send_webhook(
 async def latest_video(accountname, ms_token):
     async with TikTokApi() as api:
         print(f"Checking Account: {accountname}")
-        print(f"Token: {ms_token}")
         await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3)
         counter = 1
         async for video in api.user(accountname).videos(count=2):
-            if counter == 1:
-                counter = counter + 1
-                continue
             return video.id
 
 def save_video(accountname, video_id):
@@ -77,7 +73,16 @@ def main():
         print(f"Latest Video ID: {video_id}")
         if video_id in old_feed:
             print(f"Video already posted, skipping...")
-        elif old_feed != [] or args.force_old:
+        elif old_feed == [] or args.force_old:
+            filepath = save_video(args.account, video_id)
+            video = File(filepath)
+            webhook.send(file=video)
+            print(f"Webhook sent!")
+            os.remove(filepath)
+                    
+            with open(args.archive, "a+") as f:
+                f.write(video_id + "\n")
+        else:
             filepath = save_video(args.account, video_id)
             video = File(filepath)
             webhook.send(file=video)
